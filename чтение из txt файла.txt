@@ -1,0 +1,10 @@
+SET SERVEROUTPUT ON
+DECLARE
+   l_file UTL_FILE.FILE_TYPE; 
+   l_line VARCHAR2(32767);
+BEGIN
+   l_file := UTL_FILE.FOPEN ('DUMP_FILES1', '1.txt', 'R', max_linesize =>
+32767);
+   UTL_FILE.GET_LINE (l_file, l_line);
+   DBMS_OUTPUT.PUT_LINE (l_line);
+END;

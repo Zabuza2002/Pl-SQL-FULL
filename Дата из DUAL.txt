@@ -1,0 +1,12 @@
+create or replace procedure WeekDay (chislo  varchar, month  varchar2) as
+c date;
+d varchar2(50);
+begin
+c :=chislo||'-'||month||'-'||'21';
+select to_char(TO_DATE (c, 'DD-MM-YY'), 'DAY') into d from dual;
+DBMS_OUTPUT.PUT_LINE(c);
+DBMS_OUTPUT.PUT_LINE(d);
+
+end;
+
+exec WeekDay('01','02');

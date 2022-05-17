@@ -1,0 +1,14 @@
+38 – «Вызов текста в файл»
+Разработать хранимую процедуру, выводящую в текстовый файл таблицу Items.
+
+DECLARE
+   fileid UTL_FILE.file_type;
+BEGIN
+     fileid := UTL_FILE.FOPEN ('DUMP_FILES1', '1.txt', 'W');
+   FOR emprec IN (SELECT * FROM items1)
+   LOOP
+      UTL_FILE.put_line (fileid,  emprec.ITEM_NUM || ' ' || emprec.ORDER_NUM || ' ' || emprec.STOCK_NUM  || ' ' ||  emprec.MANU_CODE || ' ' || emprec.QUANTITY || ' ' ||  emprec.TOTAL_PRICE) ;
+   END LOOP;
+
+   UTL_FILE.fclose (fileid);
+END;

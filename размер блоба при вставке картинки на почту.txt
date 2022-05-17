@@ -1,0 +1,66 @@
+CREATE OR REPLACE TRIGGER errorMSG 
+FOR INSERT ON tasks1 --составной триггер, который вызывается после INSERT в таблицу tasks1
+compound trigger
+ lv_subject varchar2(4000):= 'cyrillic';
+ c utl_smtp.connection; -- переменная, представляющая smtp-соединение
+     smtpHost VARCHAR(65) := 'smtp.gmail.com';
+	 smtpPort INTEGER:= 587;
+	 emailHost VARCHAR(65) := 'ruswalktrough@gmail.com';
+	 emailPassword VARCHAR(65) := '5srxnl55';
+       i number;
+       id number;
+ after statement is -- блок составного триггера в котором действия выполняются по завершении всех манипуляций с таблицами
+  begin
+  select DBMS_LOB.GETLENGTH(description)  into i
+   from tasks1 
+   order by task_id desc 
+   FETCH NEXT 1 ROWS ONLY;
+  
+  select task_id  into id
+   from tasks1 
+   order by task_id desc 
+   FETCH NEXT 1 ROWS ONLY;
+  i := i/1024/1024;
+    if i > 4 then
+-------------------------------------------------------------------------------- блок с отправкой сообщения
+    c := utl_smtp.open_connection(
+            host => smtpHost
+            ,port => smtpPort
+            , wallet_path => 'file:C:\app\79683\product\21c\dbhomeXE\data\wallet' --ваш путь
+            , wallet_password => '5srXnL55' --ваш пароль от пакета
+            , secure_connection_before_smtp => false
+       ); --когда так открывается коннектор, то ehlo. Это для обоих способов авторизации
+    utl_smtp.ehlo(c, smtpHost);
+    utl_smtp.starttls(c); 
+    utl_smtp.ehlo(c, smtpHost);
+    utl_smtp.auth(
+      c => c,
+      username => emailHost,
+      password => emailPassword,
+      schemes  => utl_smtp.all_schemes
+					);
+        
+                utl_smtp.mail(c, emailHost);
+		utl_smtp.rcpt(c, 'pasha499@mail.ru');
+		utl_smtp.open_data(c);
+              
+        UTL_SMTP.write_data (c, 'Date: ' || TO_CHAR (SYSDATE, 'DD-MM-YYYY HH24:MI:SS') || utl_tcp.crlf);
+		utl_smtp.write_data(c, 'From: ruswalktrough@gmail.com' || utl_tcp.crlf); --ваша почта        
+        lv_subject := '=?UTF8?Q?'||replace(utl_encode.TEXT_ENCODE('Ошибка при добавлении файла в базу данных!','UTF8'),'='||chr(13) || chr(10)) || '?='; --заголовок письма
+        UTL_SMTP.write_raw_data(c, utl_raw.cast_to_raw('Subject' || ': ' || lv_subject||utl_tcp.crlf )); --заголовок письма        
+        UTL_SMTP.write_data (c, 'To: ' || 'pasha499@mail.ru' ||  utl_tcp.crlf);   
+        utl_smtp.write_data(c, 'MIME-version: 1.0' || utl_tcp.CRLF);
+        utl_smtp.write_data(c, 'Content-Transfer-Encoding: QUOTED-PRINTABLE'||utl_tcp.CRLF);
+        utl_smtp.write_data(c, utl_encode.TEXT_ENCODE('Вы добавили файл, размер которого превышает допустимые значения в 80 Мегабайт','CL8KOI8R'));
+        UTL_SMTP.write_data (c, ' ' || utl_tcp.crlf);
+        utl_smtp.write_data(c, utl_encode.TEXT_ENCODE('Размер файла: ','CL8KOI8R') || i || utl_encode.TEXT_ENCODE(' МБ','CL8KOI8R'));
+        UTL_SMTP.write_data (c, ' ' || utl_tcp.crlf);
+        utl_smtp.write_data(c, utl_encode.TEXT_ENCODE('ID файла: ','CL8KOI8R') || id);
+        UTL_SMTP.write_data (c, ' ' || utl_tcp.crlf);
+        utl_smtp.write_data(c, utl_encode.TEXT_ENCODE('Время и дата добавления файла: ','CL8KOI8R') || TO_CHAR (SYSDATE, 'DD.MM.YYYY HH24:MI:SS'));
+		utl_smtp.write_data(c, utl_tcp.crlf);
+    UTL_SMTP.close_data(c);
+    utl_smtp.quit(c); --закрытие соединения 
+end if;
+end after statement;
+END;

@@ -1,0 +1,263 @@
+
+DROP TABLE cust_calls;
+DROP TABLE call_type;
+DROP TABLE items;
+DROP TABLE orders;
+DROP TABLE customer;
+DROP TABLE catalog;
+DROP TABLE stock;
+DROP TABLE manufact;
+DROP TABLE manufact;
+
+create table customer (	
+	customer_num int primary key,	
+	fname char(15),	
+	lname char (15),	
+	company char(40),	
+	address1 char(50),	
+	address2 char(50),	
+	city char(15),	
+	state char(2),	
+	zipcode char(5),	
+	phone char (18) 
+);
+create table manufact (	
+	manu_code char(3) primary key,	
+	manu_name char (15),	
+	lead_time interval day(3) to second(0)
+);
+create table call_type (	
+	call_code char(1) primary key,	
+	call_descr char (30)
+);
+create table cust_calls (	
+	customer_num int references customer(customer_num),	call_dtime date,	
+	user_id char(18),	
+	call_code char (1) references call_type(call_code),	call_descr clob,	
+	res_dtime date,	
+	res_descr char(240),	
+	primary key (customer_num, call_dtime)
+);
+
+
+create table stock (
+	stock_num number(6),
+	manu_code char(3) references manufact(manu_code),
+	description char(15),
+	unit_price number(6,2),
+	unit char(4),
+	unit_descr char(15),
+	primary key (stock_num, manu_code)
+);
+create table catalog (
+	catalog_num int primary key,
+	stock_num number(6),
+	manu_code char(3),
+	cat_descr clob,
+	cat_picture blob,
+	cat_advert varchar(255),
+	foreign key (stock_num, manu_code)
+	references stock (stock_num, manu_code)
+);
+
+create table orders (
+	order_num int primary key,
+	order_date date not null,
+	customer_num int references customer(customer_num),	ship_instruct char(40),
+	backlog char(1),
+	po_num char(10),	
+	ship_date date,
+	ship_weight number (8,2),
+	ship_charge number(6,2),
+	paid_date date 
+);
+create table items (
+	item_num number(6),
+	order_num int references orders(order_num),	
+    	stock_num number(6),
+	manu_code char(3),
+	quantity number(6),
+	total_price number(8,2),
+	foreign key (stock_num,manu_code)
+	references stock (stock_num,manu_code));
+    
+insert into customer(customer_num, fname, lname, company, address1, address2, city, state, zipcode, phone)
+values(101, 'Bob', 'Miguri', 'All Sports', '3035 Colonial Drive', 'Street', 'Brazoria', 'TX', '97641', '77422');
+insert into customer(customer_num, fname, lname, company, address1, address2, city, state, zipcode, phone)
+values(102, 'Igor', 'Gigi', 'Sports', '1668 Lena Lane', '', 'Meridian', 'MS', '14256', '65600');
+insert into customer(customer_num, fname, lname, company, address1, address2, city, state, zipcode, phone)
+values(103, 'Vlad', 'Currie', 'Phills', '2158 Scenicview Drive', '', 'Seattle', 'WA', '95321', '42607');
+insert into customer(customer_num, fname, lname, company, address1, address2, city, state, zipcode, phone)
+values(104, 'Philip', 'Higgins', 'Play Basketball', '2184 Fairfax Drive', '', 'Anaheim', 'CA', '12865', '86521');
+insert into customer(customer_num, fname, lname, company, address1, address2, city, state, zipcode, phone)
+values(105, 'Anthony', 'Vector', 'Los Alt', '1483 Villa Drive', '', 'South Bend', 'IN', '42759', '63524');
+insert into customer(customer_num, fname, lname, company, address1, address2, city, state, zipcode, phone)
+values(106, 'George', 'Watson', 'Watson', '1143 La Drive', '', 'Mountain', 'CA', '94063', '415389');
+insert into customer(customer_num, fname, lname, company, address1, address2, city, state, zipcode, phone)
+values(107, 'Charles', 'Ream', 'Atchletic', '41 Jordan street', '', 'Palo Alto', 'CA', '94304', '415356');
+insert into customer(customer_num, fname, lname, company, address1, address2, city, state, zipcode, phone)
+values(108, 'Donald', 'Quinn', 'Quinns', '587 Alv Drive', '', 'Redwood', 'CA', '94063', '415544');
+insert into customer(customer_num, fname, lname, company, address1, address2, city, state, zipcode, phone)
+values(109, 'Jane', 'Miller', 'Sport S', 'Mayfair', '7354 Rollbuild', 'Sunnyva', 'CA', '94086', '408723');
+insert into customer(customer_num, fname, lname, company, address1, address2, city, state, zipcode, phone)
+values(110, 'Roy', 'Jaeger', 'AA Athlantic', '520 Top str', '', 'Redwood', 'CA', '94062', '415741');
+insert into customer(customer_num, fname, lname, company, address1, address2, city, state, zipcode, phone)
+values(111, 'Henry', 'Cavill', 'High', '510 Top str', '', 'Redwood', 'FL', '32256', '425741');
+insert into customer(customer_num, fname, lname, company, address1, address2, city, state, zipcode, phone)
+values(112, 'Holly', 'Black', 'Hysical', '532 Top str', '', 'Redwood', 'NY', '74006', '415841');
+
+
+insert into manufact(manu_code, manu_name, lead_time)
+values('ANZ', 'Anza', INTERVAL '20' DAY);
+insert into manufact(manu_code, manu_name, lead_time)
+values('SMT', 'Smith', INTERVAL '11' DAY);
+insert into manufact(manu_code, manu_name, lead_time)
+values('NRG', 'Norge', INTERVAL '10' DAY);
+insert into manufact(manu_code, manu_name, lead_time)
+values('HSK', 'Husky', INTERVAL '12' DAY);
+insert into manufact(manu_code, manu_name, lead_time)
+values('HRO', 'Hero', INTERVAL '18' DAY);
+insert into manufact(manu_code, manu_name, lead_time)
+values('SHM', 'Shimara', INTERVAL '30' DAY);
+insert into manufact(manu_code, manu_name, lead_time)
+values('KAR', 'Karsten', INTERVAL '21' DAY);
+insert into manufact(manu_code, manu_name, lead_time)
+values('NKL', 'Nikolus', INTERVAL '08' DAY);
+insert into manufact(manu_code, manu_name, lead_time)
+values('PRC', 'ProCycle', INTERVAL '09' DAY);
+insert into manufact(manu_code, manu_name, lead_time)
+values('SPR', 'Spirit', INTERVAL '09' DAY);
+
+insert into call_type(call_code, call_descr)
+values('B', 'billing error');
+insert into call_type(call_code, call_descr)
+values('D', 'damaged goods');
+insert into call_type(call_code, call_descr)
+values('I', 'incorrect merchandise sent');
+insert into call_type(call_code, call_descr)
+values('L', 'late shipment');
+insert into call_type(call_code, call_descr)
+values('O', 'other');
+
+insert into cust_calls(customer_num, call_dtime, user_id, call_code, call_descr, res_dtime, res_descr)
+values(101, TO_DATE('06.12.1998', 'DD.MM.YYYY'), 'maryj', 'D', 'Order was received', TO_DATE('12.06.1998', 'DD.MM.YYYY'), 'Authorized credit');
+insert into cust_calls(customer_num, call_dtime, user_id, call_code, call_descr, res_dtime, res_descr)
+values(102, TO_DATE('07.07.1998', 'DD.MM.YYYY'), 'richc', 'L', 'Order placed one month ago', TO_DATE('07.07.1998', 'DD.MM.YYYY'), 'Checked with ship');
+insert into cust_calls(customer_num, call_dtime, user_id, call_code, call_descr, res_dtime, res_descr)
+values(103, TO_DATE('07.01.1998', 'DD.MM.YYYY'), 'richc', 'B', 'Bill does not reflect', TO_DATE('02.07.1998', 'DD.MM.YYYY'), 'Spoke with Jane A');
+insert into cust_calls(customer_num, call_dtime, user_id, call_code, call_descr, res_dtime, res_descr)
+values(104, TO_DATE('07.10.1998', 'DD.MM.YYYY'), 'maryj', 'O', 'Customer likes our', TO_DATE('10.07.1998', 'DD.MM.YYYY'), 'Sent note to mark');
+insert into cust_calls(customer_num, call_dtime, user_id, call_code, call_descr, res_dtime, res_descr)
+values(105, TO_DATE('12.06.1998', 'DD.MM.YYYY'), 'maryj', 'D', 'Order was received, but', TO_DATE('12.06.1998', 'DD.MM.YYYY'), 'Authorized credit');
+
+insert into stock(stock_num, manu_code, description, unit_price, unit, unit_descr)
+values(1, 'HRO', 'baseball gloves', 250, 'case', '10 gloves/case');
+insert into stock(stock_num, manu_code, description, unit_price, unit, unit_descr)
+values(1, 'HSK', 'baseball gloves', 800, 'case', '10 gloves/case');
+insert into stock(stock_num, manu_code, description, unit_price, unit, unit_descr)
+values(1, 'SMT', 'baseball gloves', 450, 'case', '10 gloves/case');
+insert into stock(stock_num, manu_code, description, unit_price, unit, unit_descr)
+values(2, 'HRO', 'baseball', 126, 'case', '24/case');
+insert into stock(stock_num, manu_code, description, unit_price, unit, unit_descr)
+values(3, 'HSK', 'baseball bat', 240, 'case', '12/case');
+insert into stock(stock_num, manu_code, description, unit_price, unit, unit_descr)
+values(3, 'SHM', 'baseball bat', 280, 'case', '12/case');
+insert into stock(stock_num, manu_code, description, unit_price, unit, unit_descr)
+values(4, 'HSK', 'football', 960, 'case', '24/case');
+insert into stock(stock_num, manu_code, description, unit_price, unit, unit_descr)
+values(4, 'HRO', 'football', 480, 'case', '24/case');
+insert into stock(stock_num, manu_code, description, unit_price, unit, unit_descr)
+values(5, 'NRG', 'tennis racquet', 28, 'each', 'each');
+insert into stock(stock_num, manu_code, description, unit_price, unit, unit_descr)
+values(5, 'SMT', 'tennis racquet', 25, 'each', 'each');
+insert into stock(stock_num, manu_code, description, unit_price, unit, unit_descr)
+values(5, 'ANZ', 'tennis racquet', 19.8, 'each', 'each');
+
+insert into catalog(catalog_num, stock_num, manu_code, cat_descr, cat_advert)
+values(10043, 1, 'HRO', 'Full set', 'High-quality');
+insert into catalog(catalog_num, stock_num, manu_code, cat_descr, cat_advert)
+values(10044, 1, 'HSK', 'Set of eight', 'Set of Irons');
+insert into catalog(catalog_num, stock_num, manu_code, cat_descr, cat_advert)
+values(10045, 1, 'SMT', 'Ideally balanced', 'High-quality beginning');
+insert into catalog(catalog_num, stock_num, manu_code, cat_descr, cat_advert)
+values(10046, 2, 'HRO', 'Fluoreascent yellow', 'Long-Drive Golf Balls');
+insert into catalog(catalog_num, stock_num, manu_code, cat_descr, cat_advert)
+values(10047, 3, 'HSK', 'White only', 'Long-Drive Golf Balls');
+insert into catalog(catalog_num, stock_num, manu_code, cat_descr, cat_advert)
+values(10048, 4, 'HRO', 'Combination', 'HighFlier Golf Balls');
+insert into catalog(catalog_num, stock_num, manu_code, cat_descr, cat_advert)
+values(10049, 3, 'SHM', 'Super shock-absorbing', 'Maximum protection');
+insert into catalog(catalog_num, stock_num, manu_code, cat_descr, cat_advert)
+values(10050, 5, 'NRG', 'Engineered', 'Pronators');
+insert into catalog(catalog_num, stock_num, manu_code, cat_descr, cat_advert)
+values(10051, 5, 'SMT', 'For runners', 'The training shoe');
+insert into catalog(catalog_num, stock_num, manu_code, cat_descr, cat_advert)
+values(10052, 5, 'ANZ', 'Supportive, stable', 'A womans raicing flat');
+insert into catalog(catalog_num, stock_num, manu_code, cat_descr, cat_advert)
+values(10053, 5, 'ANZ', 'Icon, stable', 'A womans raicing flat');
+
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1001, TO_DATE('20.05.1998', 'DD.MM.YYYY'), 101, 'express', 'n', 'B77836', TO_DATE('01.06.1998', 'DD.MM.YYYY'), 20.4, 10, TO_DATE('22.07.1998', 'DD.MM.YYYY'));
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1002, TO_DATE('21.05.1998', 'DD.MM.YYYY'), 102, 'PO on box', 'n', '9270', TO_DATE('26.05.1998', 'DD.MM.YYYY'), 50.6, 15.3, TO_DATE('03.06.1998', 'DD.MM.YYYY'));
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1003, TO_DATE('22.05.1998', 'DD.MM.YYYY'), 103, 'express', 'n', 'B77890', TO_DATE('23.05.1998', 'DD.MM.YYYY'), 35.6, 10.8, TO_DATE('14.06.1998', 'DD.MM.YYYY'));
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1004, TO_DATE('22.05.1998', 'DD.MM.YYYY'), 104, 'ring bell twice', 'y', '8006', TO_DATE('30.05.1998', 'DD.MM.YYYY'), 95.8, 19.2, TO_DATE('22.07.1998', 'DD.MM.YYYY'));
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1005,TO_DATE('24.05.1998', 'DD.MM.YYYY'), 105, 'call before delivery', 'n', '2865', TO_DATE('09.06.1998', 'DD.MM.YYYY'), 80.8, 16.2, TO_DATE('21.06.1998', 'DD.MM.YYYY'));
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1006,TO_DATE('30.05.1998', 'DD.MM.YYYY'), 106, 'after 10 am', 'y', 'Q135557',null, 70.8, 14.2, null);
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1007,TO_DATE('31.05.1998', 'DD.MM.YYYY'), 107, null, 'n', '278693', TO_DATE('05.06.1998', 'DD.MM.YYYY'), 125.9, 25.2, null);
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1008,TO_DATE('07.06.1998', 'DD.MM.YYYY'), 108, 'closed Monday', 'y', 'L2230', TO_DATE('06.07.1998', 'DD.MM.YYYY'), 45.6, 13.8, TO_DATE('21.07.1998', 'DD.MM.YYYY'));
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1009,TO_DATE('14.06.1998', 'DD.MM.YYYY'), 109, 'next door to grocery', 'n', '4745', TO_DATE('21.06.1998', 'DD.MM.YYYY'), 20.4, 10, TO_DATE('21.08.1998', 'DD.MM.YYYY'));
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1010,TO_DATE('17.06.1998', 'DD.MM.YYYY'), 107, 'deliver 776 King St', 'n', '429Q', TO_DATE('29.06.1998', 'DD.MM.YYYY'), 40.6, 12.3, TO_DATE('22.08.1998', 'DD.MM.YYYY'));
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1011,TO_DATE('17.06.1998', 'DD.MM.YYYY'), 112, 'deliver 776 King St', 'n', '429Q', TO_DATE('18.06.1998', 'DD.MM.YYYY'), 40.6, 12.3, TO_DATE('22.08.1998', 'DD.MM.YYYY'));
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1012,TO_DATE('20.06.1998', 'DD.MM.YYYY'), 112, 'deliver 776 King St', 'n', '429Q', TO_DATE('23.06.1998', 'DD.MM.YYYY'), 40.6, 12.3, TO_DATE('22.08.1998', 'DD.MM.YYYY'));
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1013,TO_DATE('20.06.1998', 'DD.MM.YYYY'), 112, 'deliver 776 King St', 'n', '429Q', TO_DATE('23.06.1998', 'DD.MM.YYYY'), 40.6, 12.3, null);
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1014,TO_DATE('20.09.1998', 'DD.MM.YYYY'), 101, 'deliver 776 King St', 'n', '429Q', TO_DATE('22.09.1998', 'DD.MM.YYYY'), 40.6, 12.3, null);
+insert into orders(order_num, order_date, customer_num, ship_instruct, backlog, po_num, ship_date, ship_weight, ship_charge, paid_date)
+values(1015,TO_DATE('22.09.1998', 'DD.MM.YYYY'), 102, 'deliver 776 King St', 'n', '429Q', TO_DATE('24.09.1998', 'DD.MM.YYYY'), 40.6, 12.3, null);
+
+
+
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(1, 1001, 1, 'HRO', 1, 250);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(2, 1002, 1, 'HSK', 1, 960);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(3, 1002, 1, 'SMT', 10, 240);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(4, 1003, 2, 'HRO', 1, 20);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(5, 1003, 3, 'HSK', 1, 840);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(6, 1003, 3, 'SHM', 5, 99);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(7, 1004, 4, 'HSK', 1, 250);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(8, 1004, 4, 'HSK', 1, 126);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(9, 1004, 4, 'HRO', 1, 240);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(10, 1004, 5, 'SMT', 1, 800);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(11, 1006, 5, 'SMT', 1, 700);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(12, 1007, 5, 'ANZ', 3, 330);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(13, 1003, 5, 'ANZ', 5, 199);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(14, 1011, 5, 'ANZ', 1, 199);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(15, 1012, 5, 'ANZ', 3, 300);
+insert into items(item_num, order_num, stock_num, manu_code, quantity, total_price)
+values(16, 1013, 5, 'ANZ', 4, 400);
